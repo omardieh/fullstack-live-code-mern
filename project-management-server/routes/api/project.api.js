@@ -2,6 +2,7 @@ const projectRouter = require("express").Router();
 const Project = require("../../models/Project.model");
 const { ObjectId } = require("mongoose").Types;
 
+// create a new project
 projectRouter.post("/projects", async (req, res, next) => {
   const { title, description } = req.body;
   if (!title || !description) {
@@ -20,6 +21,7 @@ projectRouter.post("/projects", async (req, res, next) => {
   }
 });
 
+// get all projects
 projectRouter.get("/projects", async (req, res, next) => {
   try {
     const foundProjects = await Project.find();
@@ -29,19 +31,21 @@ projectRouter.get("/projects", async (req, res, next) => {
   }
 });
 
+// get a project by its ID
 projectRouter.get("/projects/:projectID", async (req, res, next) => {
   const { projectID } = req.params;
   if (!ObjectId.isValid(projectID)) {
     res.send("Object ID is not valid");
   }
   try {
-    const foundProject = await Project.findById(projectID);
+    const foundProject = await Project.findById(projectID).populate("tasks");
     res.json(foundProject);
   } catch (err) {
     next(err);
   }
 });
 
+// update a project by its ID
 projectRouter.put("/projects/:projectID", async (req, res, next) => {
   const { projectID } = req.params;
   if (!ObjectId.isValid(projectID)) {
@@ -59,6 +63,7 @@ projectRouter.put("/projects/:projectID", async (req, res, next) => {
   }
 });
 
+// delete a project by its ID
 projectRouter.delete("/projects/:projectID", async (req, res, next) => {
   const { projectID } = req.params;
   if (!ObjectId.isValid(projectID)) {
